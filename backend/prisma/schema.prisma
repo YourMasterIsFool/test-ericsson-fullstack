@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  email String @unique
+
+  name String?
+
+  posts Post[]
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  content String?
+
+  published Boolean @default(false)
+
+  author User @relation(fields: [authorId], references: [id])
+
+  authorId Int
+}
+
+model Shipment {
+  id           Int     @id @default(autoincrement())
+  shipment_id  String? @unique
+  asal         String?
+  tujuan       String
+  status       String  @default("Belum Berangkat")
+  nama_driver  String?
+  no_hp_driver String?
+
+  plat_kendaraan    String?
+  tanggal_berangkat DateTime?
+  dibuat_pada       DateTime? @default(dbgenerated("CURRENT_TIMESTAMP"))
+  items             Item[]
+}
+
+model Item {
+  id          Int       @id @default(autoincrement())
+  shipment_id String?
+  Shipment    Shipment? @relation(fields: [shipment_id], references: [shipment_id])
+  nama_item   String
+  kuantitas   Int       @default(0)
+}
